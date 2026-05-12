@@ -1,0 +1,2 @@
+# Railway will auto-detect Node.js and run npm start
+# Make sure your package.json has: "start": "node server.js"
