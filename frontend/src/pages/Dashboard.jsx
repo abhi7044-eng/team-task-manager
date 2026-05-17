@@ -2,15 +2,14 @@ import { useEffect, useState } from "react";
 import API from "../api/axios";
 import { useAuth } from "../context/AuthContext";
 
-// Individual stat card component
 const StatCard = ({ label, value, color, icon }) => (
-  <div className={`bg-white rounded-xl border border-gray-200 p-6 flex items-center gap-4`}>
-    <div className={`w-12 h-12 rounded-xl flex items-center justify-center text-2xl ${color}`}>
+  <div className={`bg-white rounded-xl border border-gray-200 p-4 flex items-center gap-3`}>
+    <div className={`w-10 h-10 rounded-xl flex items-center justify-center text-xl ${color} flex-shrink-0`}>
       {icon}
     </div>
     <div>
-      <p className="text-sm text-gray-500">{label}</p>
-      <p className="text-3xl font-bold text-gray-800">{value}</p>
+      <p className="text-xs text-gray-500">{label}</p>
+      <p className="text-2xl font-bold text-gray-800">{value}</p>
     </div>
   </div>
 );
@@ -44,9 +43,9 @@ export default function Dashboard() {
 
   return (
     <div>
-      {/* Page Header */}
-      <div className="mb-8">
-        <h2 className="text-2xl font-bold text-gray-800">
+      {/* Header */}
+      <div className="mb-6">
+        <h2 className="text-xl md:text-2xl font-bold text-gray-800">
           👋 Welcome back, {user?.name}!
         </h2>
         <p className="text-gray-500 mt-1 text-sm">
@@ -55,52 +54,32 @@ export default function Dashboard() {
         </p>
       </div>
 
-      {/* Stat Cards */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-10">
-        <StatCard
-          label="Total Tasks"
-          value={stats?.total ?? 0}
-          color="bg-indigo-50"
-          icon="📋"
-        />
-        <StatCard
-          label="Pending"
-          value={stats?.pending ?? 0}
-          color="bg-yellow-50"
-          icon="⏳"
-        />
-        <StatCard
-          label="In Progress"
-          value={stats?.inProgress ?? 0}
-          color="bg-blue-50"
-          icon="🔄"
-        />
-        <StatCard
-          label="Completed"
-          value={stats?.completed ?? 0}
-          color="bg-green-50"
-          icon="✅"
-        />
+      {/* Stat Cards — 2 columns on mobile, 4 on desktop */}
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 mb-6">
+        <StatCard label="Total Tasks" value={stats?.total ?? 0} color="bg-indigo-50" icon="📋" />
+        <StatCard label="Pending" value={stats?.pending ?? 0} color="bg-yellow-50" icon="⏳" />
+        <StatCard label="In Progress" value={stats?.inProgress ?? 0} color="bg-blue-50" icon="🔄" />
+        <StatCard label="Completed" value={stats?.completed ?? 0} color="bg-green-50" icon="✅" />
       </div>
 
       {/* Overdue Alert */}
       {stats?.overdue > 0 && (
-        <div className="bg-red-50 border border-red-200 rounded-xl p-4 flex items-center gap-3">
-          <span className="text-2xl">⚠️</span>
+        <div className="bg-red-50 border border-red-200 rounded-xl p-4 flex items-start gap-3 mb-6">
+          <span className="text-xl flex-shrink-0">⚠️</span>
           <div>
-            <p className="text-red-700 font-medium">
+            <p className="text-red-700 font-medium text-sm">
               {stats.overdue} overdue {stats.overdue === 1 ? "task" : "tasks"}
             </p>
-            <p className="text-red-500 text-sm">
+            <p className="text-red-500 text-xs mt-0.5">
               Please check the Tasks page and update these.
             </p>
           </div>
         </div>
       )}
 
-      {/* Tips for role */}
-      <div className="mt-8 bg-indigo-50 border border-indigo-100 rounded-xl p-5">
-        <h3 className="font-semibold text-indigo-800 mb-2">
+      {/* Tips */}
+      <div className="bg-indigo-50 border border-indigo-100 rounded-xl p-4">
+        <h3 className="font-semibold text-indigo-800 mb-2 text-sm">
           {user?.role === "admin" ? "👑 Admin Tips" : "💡 Member Tips"}
         </h3>
         <ul className="text-sm text-indigo-700 space-y-1 list-disc list-inside">
