@@ -3,16 +3,21 @@ import toast from "react-hot-toast";
 import API from "../api/axios";
 import { useAuth } from "../context/AuthContext";
 
-// Status badge colors
+// Fix 2 — updated status names
 const statusColor = {
-  Pending: "bg-yellow-100 text-yellow-700",
+  "To Do": "bg-yellow-100 text-yellow-700",
   "In Progress": "bg-blue-100 text-blue-700",
-  Completed: "bg-green-100 text-green-700",
+  "Done": "bg-green-100 text-green-700",
 };
 
-// Check if a task is overdue
+const priorityColor = {
+  "Low": "bg-gray-100 text-gray-600",
+  "Medium": "bg-orange-100 text-orange-700",
+  "High": "bg-red-100 text-red-700",
+};
+
 const isOverdue = (dueDate, status) => {
-  return new Date(dueDate) < new Date() && status !== "Completed";
+  return new Date(dueDate) < new Date() && status !== "Done";
 };
 
 // ── Task Form Modal (admin only) ─────────────────────────────────────────────
@@ -26,8 +31,17 @@ function TaskModal({ onClose, onSave, projects, users, initial }) {
           assignedTo: initial.assignedTo?._id || "",
           dueDate: initial.dueDate?.slice(0, 10) || "",
           status: initial.status,
+          priority: initial.priority || "Medium",
         }
-      : { title: "", description: "", projectId: "", assignedTo: "", dueDate: "", status: "Pending" }
+      : {
+          title: "",
+          description: "",
+          projectId: "",
+          assignedTo: "",
+          dueDate: "",
+          status: "To Do",
+          priority: "Medium",
+        }
   );
 
   const handleChange = (e) => setForm({ ...form, [e.target.name]: e.target.value });
@@ -102,6 +116,21 @@ function TaskModal({ onClose, onSave, projects, users, initial }) {
             </select>
           </div>
 
+          {/* Fix 1 — Priority field */}
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">Priority *</label>
+            <select
+              name="priority"
+              value={form.priority}
+              onChange={handleChange}
+              className="w-full px-4 py-2.5 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-white"
+            >
+              <option value="Low">Low</option>
+              <option value="Medium">Medium</option>
+              <option value="High">High</option>
+            </select>
+          </div>
+
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">Due Date *</label>
             <input
@@ -122,9 +151,9 @@ function TaskModal({ onClose, onSave, projects, users, initial }) {
                 onChange={handleChange}
                 className="w-full px-4 py-2.5 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-white"
               >
-                <option>Pending</option>
+                <option>To Do</option>
                 <option>In Progress</option>
-                <option>Completed</option>
+                <option>Done</option>
               </select>
             </div>
           )}
@@ -150,7 +179,7 @@ function TaskModal({ onClose, onSave, projects, users, initial }) {
   );
 }
 
-// ── Update Status Modal (member only) ────────────────────────────────────────
+// ── Status Modal (member only) ────────────────────────────────────────────────
 function StatusModal({ task, onClose, onSave }) {
   const [status, setStatus] = useState(task.status);
 
@@ -165,9 +194,9 @@ function StatusModal({ task, onClose, onSave }) {
           onChange={(e) => setStatus(e.target.value)}
           className="w-full px-4 py-2.5 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-white mb-4"
         >
-          <option>Pending</option>
+          <option>To Do</option>
           <option>In Progress</option>
-          <option>Completed</option>
+          <option>Done</option>
         </select>
 
         <div className="flex gap-3">
@@ -269,7 +298,6 @@ export default function Tasks() {
 
   return (
     <div>
-      {/* Header */}
       <div className="flex items-center justify-between mb-6">
         <div>
           <h2 className="text-2xl font-bold text-gray-800">Tasks</h2>
@@ -287,7 +315,6 @@ export default function Tasks() {
         )}
       </div>
 
-      {/* Empty state */}
       {tasks.length === 0 ? (
         <div className="text-center py-16 text-gray-400">
           <p className="text-4xl mb-3">✅</p>
@@ -295,13 +322,14 @@ export default function Tasks() {
           {isAdmin && <p className="text-sm mt-1">Create your first task to assign work.</p>}
         </div>
       ) : (
-        <div className="bg-white rounded-xl border border-gray-200 overflow-hidden">
+        <div className="bg-white rounded-xl border border-gray-200 overflow-x-auto">
           <table className="w-full text-sm">
             <thead className="bg-gray-50 text-gray-500 uppercase text-xs">
               <tr>
                 <th className="px-6 py-3 text-left">Task</th>
                 <th className="px-6 py-3 text-left">Project</th>
                 <th className="px-6 py-3 text-left">Assigned To</th>
+                <th className="px-6 py-3 text-left">Priority</th>
                 <th className="px-6 py-3 text-left">Due Date</th>
                 <th className="px-6 py-3 text-left">Status</th>
                 <th className="px-6 py-3 text-left">Actions</th>
@@ -318,6 +346,12 @@ export default function Tasks() {
                   </td>
                   <td className="px-6 py-4 text-gray-600">{t.projectId?.title || "—"}</td>
                   <td className="px-6 py-4 text-gray-600">{t.assignedTo?.name || "—"}</td>
+                  {/* Fix 1 — show priority */}
+                  <td className="px-6 py-4">
+                    <span className={`px-2.5 py-1 rounded-full text-xs font-medium ${priorityColor[t.priority] || "bg-gray-100 text-gray-600"}`}>
+                      {t.priority || "Medium"}
+                    </span>
+                  </td>
                   <td className="px-6 py-4">
                     <span className={isOverdue(t.dueDate, t.status) ? "text-red-500 font-medium" : "text-gray-500"}>
                       {new Date(t.dueDate).toLocaleDateString()}
@@ -325,6 +359,7 @@ export default function Tasks() {
                     </span>
                   </td>
                   <td className="px-6 py-4">
+                    {/* Fix 2 — updated status names */}
                     <span className={`px-2.5 py-1 rounded-full text-xs font-medium ${statusColor[t.status]}`}>
                       {t.status}
                     </span>
@@ -363,7 +398,6 @@ export default function Tasks() {
         </div>
       )}
 
-      {/* Admin Create/Edit Modal */}
       {showModal && (
         <TaskModal
           onClose={() => { setShowModal(false); setEditTask(null); }}
@@ -374,7 +408,6 @@ export default function Tasks() {
         />
       )}
 
-      {/* Member Status Update Modal */}
       {statusTask && (
         <StatusModal
           task={statusTask}

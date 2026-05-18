@@ -8,14 +8,12 @@ const getTasks = async (req, res) => {
     let tasks;
 
     if (req.user.role === "admin") {
-      // Admin sees all tasks in their projects
       const adminProjects = await Project.find({ createdBy: req.user._id }).select("_id");
       const projectIds = adminProjects.map((p) => p._id);
       tasks = await Task.find({ projectId: { $in: projectIds } })
         .populate("assignedTo", "name email")
         .populate("projectId", "title");
     } else {
-      // Members see only tasks assigned to them
       tasks = await Task.find({ assignedTo: req.user._id })
         .populate("assignedTo", "name email")
         .populate("projectId", "title");
@@ -31,9 +29,8 @@ const getTasks = async (req, res) => {
 // @access Private (Admin only)
 const createTask = async (req, res) => {
   try {
-    const { title, description, projectId, assignedTo, dueDate } = req.body;
+    const { title, description, projectId, assignedTo, dueDate, priority } = req.body;
 
-    // Make sure the project exists and belongs to admin
     const project = await Project.findById(projectId);
     if (!project) {
       return res.status(404).json({ message: "Project not found" });
@@ -45,6 +42,7 @@ const createTask = async (req, res) => {
       projectId,
       assignedTo,
       dueDate,
+      priority: priority || "Medium",
     });
 
     const populated = await task.populate([
@@ -69,15 +67,14 @@ const updateTask = async (req, res) => {
     }
 
     if (req.user.role === "admin") {
-      // Admin can update everything
-      const { title, description, assignedTo, dueDate, status } = req.body;
+      const { title, description, assignedTo, dueDate, status, priority } = req.body;
       task.title = title || task.title;
       task.description = description ?? task.description;
       task.assignedTo = assignedTo || task.assignedTo;
       task.dueDate = dueDate || task.dueDate;
       task.status = status || task.status;
+      task.priority = priority || task.priority;
     } else {
-      // Member can only update status of their own tasks
       if (task.assignedTo.toString() !== req.user._id.toString()) {
         return res.status(403).json({ message: "Not authorized" });
       }
@@ -101,11 +98,9 @@ const updateTask = async (req, res) => {
 const deleteTask = async (req, res) => {
   try {
     const task = await Task.findById(req.params.id);
-
     if (!task) {
       return res.status(404).json({ message: "Task not found" });
     }
-
     await task.deleteOne();
     res.json({ message: "Task deleted" });
   } catch (error) {
@@ -123,19 +118,29 @@ const getDashboardStats = async (req, res) => {
     if (req.user.role === "admin") {
       const adminProjects = await Project.find({ createdBy: req.user._id }).select("_id");
       const projectIds = adminProjects.map((p) => p._id);
-      tasks = await Task.find({ projectId: { $in: projectIds } });
+      tasks = await Task.find({ projectId: { $in: projectIds } })
+        .populate("assignedTo", "name");
     } else {
-      tasks = await Task.find({ assignedTo: req.user._id });
+      tasks = await Task.find({ assignedTo: req.user._id })
+        .populate("assignedTo", "name");
     }
+
+    // Fix 3 — tasks per user
+    const tasksPerUser = {};
+    tasks.forEach((t) => {
+      const name = t.assignedTo?.name || "Unassigned";
+      tasksPerUser[name] = (tasksPerUser[name] || 0) + 1;
+    });
 
     const stats = {
       total: tasks.length,
-      pending: tasks.filter((t) => t.status === "Pending").length,
+      todo: tasks.filter((t) => t.status === "To Do").length,
       inProgress: tasks.filter((t) => t.status === "In Progress").length,
-      completed: tasks.filter((t) => t.status === "Completed").length,
+      done: tasks.filter((t) => t.status === "Done").length,
       overdue: tasks.filter(
-        (t) => new Date(t.dueDate) < today && t.status !== "Completed"
+        (t) => new Date(t.dueDate) < today && t.status !== "Done"
       ).length,
+      tasksPerUser, // Fix 3 — added
     };
 
     res.json(stats);

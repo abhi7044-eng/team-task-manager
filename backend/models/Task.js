@@ -12,22 +12,27 @@ const taskSchema = new mongoose.Schema(
       trim: true,
       default: "",
     },
-    // Which project this task belongs to
     projectId: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Project",
       required: true,
     },
-    // Which user is responsible for this task
     assignedTo: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
       required: true,
     },
+    // Fix 1 — added priority field
+    priority: {
+      type: String,
+      enum: ["Low", "Medium", "High"],
+      default: "Medium",
+    },
+    // Fix 2 — updated status names to match assignment
     status: {
       type: String,
-      enum: ["Pending", "In Progress", "Completed"],
-      default: "Pending",
+      enum: ["To Do", "In Progress", "Done"],
+      default: "To Do",
     },
     dueDate: {
       type: Date,
