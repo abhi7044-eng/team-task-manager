@@ -1,66 +1,152 @@
 # 📋 Team Task Manager
 
 A full-stack web application for managing team projects and tasks with role-based access control.
-
-Built with **React + Vite** (frontend) and **Node.js + Express + MongoDB** (backend).
-
----
-
-## 🚀 Features
-
-- 🔐 **JWT Authentication** — Signup, Login, Protected routes
-- 👑 **Role-Based Access** — Admin and Member roles with different permissions
-- 📁 **Project Management** — Create projects, add team members
-- ✅ **Task Management** — Assign tasks, track status (Pending / In Progress / Completed)
-- 📊 **Dashboard** — Visual stats: total, pending, completed, overdue tasks
-- 🔔 **Toast Notifications** — Real-time feedback on all actions
+Built with **React + Vite** on the frontend and **Node.js + Express + MongoDB** on the backend.
 
 ---
 
-## 🗂️ Project Structure
+## 🔗 Live Links
+
+| | Link |
+|--|------|
+| 🌐 Live App | https://team-task-manager-1-57jt.onrender.com |
+| 💻 GitHub Repo | https://github.com/abhi7044-eng/team-task-manager |
+| 🎥 Demo Video | https://your-video-link-here |
+
+---
+
+## 👨‍💻 Developer
+
+**Name:** Abhishek Kumar
+**Email:** abhishekkumar727783@gmail.com
+**GitHub:** https://github.com/abhi7044-eng
+
+---
+
+## 🛠️ Tech Stack
+
+### Frontend
+| Technology | Purpose |
+|-----------|---------|
+| React 18 + Vite | UI framework and build tool |
+| Tailwind CSS | Styling and responsive design |
+| Axios | HTTP requests to backend API |
+| React Router DOM v6 | Client-side routing |
+| React Hot Toast | Toast notifications |
+
+### Backend
+| Technology | Purpose |
+|-----------|---------|
+| Node.js | JavaScript runtime |
+| Express.js | Web framework for REST APIs |
+| MongoDB Atlas | Cloud NoSQL database |
+| Mongoose | MongoDB object modeling |
+| JWT (jsonwebtoken) | Authentication tokens |
+| bcryptjs | Password encryption |
+
+### Deployment
+| Service | Purpose |
+|---------|---------|
+| Render.com | Backend + Frontend hosting |
+| MongoDB Atlas | Cloud database (Cluster0) |
+| GitHub | Source code repository |
+
+---
+
+## ✅ Features
+
+### Authentication
+- Signup with name, email, password, and role selection
+- Login with JWT token — stored in browser localStorage
+- Protected routes — redirects to login if not authenticated
+- Passwords encrypted with bcryptjs — never stored as plain text
+
+### Role-Based Access Control
+| Feature | Admin | Member |
+|---------|-------|--------|
+| Create projects | ✅ | ❌ |
+| Add members to projects | ✅ | ❌ |
+| Create tasks | ✅ | ❌ |
+| Assign tasks to members | ✅ | ❌ |
+| Delete projects and tasks | ✅ | ❌ |
+| View own projects | ✅ | ✅ |
+| View assigned tasks | ✅ | ✅ |
+| Update task status | ✅ | ✅ (own tasks only) |
+
+### Dashboard
+- Total tasks count
+- To Do tasks count
+- In Progress tasks count
+- Done tasks count
+- Overdue tasks alert
+- Tasks per member with progress bar
+
+### Project Management
+- Create, edit, delete projects (Admin)
+- Add and remove team members from projects
+- Members see only their assigned projects
+
+### Task Management
+- Create tasks with title, description, project, assignee, priority, and due date
+- Priority levels — Low, Medium, High (color coded)
+- Status — To Do, In Progress, Done
+- Overdue detection — highlighted in red with warning icon
+- Members can only update status of their own tasks
+
+---
+
+## 📁 Project Structure
 
 ```
 team-task-manager/
+│
 ├── backend/
-│   ├── config/
 │   ├── controllers/
-│   │   ├── authController.js
-│   │   ├── projectController.js
-│   │   ├── taskController.js
-│   │   └── userController.js
+│   │   ├── authController.js       # signup, login, getMe
+│   │   ├── projectController.js    # CRUD for projects
+│   │   ├── taskController.js       # CRUD for tasks + dashboard stats
+│   │   └── userController.js       # get all users
+│   │
 │   ├── middleware/
-│   │   └── authMiddleware.js      # JWT + role check
+│   │   └── authMiddleware.js       # JWT verify + adminOnly check
+│   │
 │   ├── models/
-│   │   ├── User.js
-│   │   ├── Project.js
-│   │   └── Task.js
+│   │   ├── User.js                 # name, email, password, role
+│   │   ├── Project.js              # title, description, members, createdBy
+│   │   └── Task.js                 # title, description, priority, status, dueDate, assignedTo, projectId
+│   │
 │   ├── routes/
-│   │   ├── authRoutes.js
-│   │   ├── projectRoutes.js
-│   │   ├── taskRoutes.js
-│   │   └── userRoutes.js
+│   │   ├── authRoutes.js           # /api/auth
+│   │   ├── projectRoutes.js        # /api/projects
+│   │   ├── taskRoutes.js           # /api/tasks
+│   │   └── userRoutes.js           # /api/users
+│   │
 │   ├── .env.example
 │   ├── package.json
-│   └── server.js
+│   └── server.js                   # entry point
 │
 └── frontend/
     ├── src/
     │   ├── api/
-    │   │   └── axios.js           # Axios instance with token interceptor
+    │   │   └── axios.js            # axios instance with token interceptor
+    │   │
     │   ├── context/
-    │   │   └── AuthContext.jsx    # Global auth state
+    │   │   └── AuthContext.jsx     # global auth state
+    │   │
     │   ├── components/
-    │   │   └── Layout.jsx         # Sidebar layout
+    │   │   └── Layout.jsx          # sidebar + mobile hamburger menu
+    │   │
     │   ├── pages/
     │   │   ├── Login.jsx
     │   │   ├── Signup.jsx
     │   │   ├── Dashboard.jsx
     │   │   ├── Projects.jsx
     │   │   └── Tasks.jsx
-    │   ├── App.jsx
+    │   │
+    │   ├── App.jsx                 # routes + protected route logic
     │   ├── main.jsx
     │   └── index.css
-    ├── .env.example
+    │
     ├── index.html
     ├── package.json
     ├── tailwind.config.js
@@ -69,132 +155,198 @@ team-task-manager/
 
 ---
 
-## 📡 API Routes
+## 📡 API Endpoints
 
-### Auth
-| Method | Endpoint         | Access  | Description    |
-|--------|-----------------|---------|----------------|
-| POST   | /api/auth/signup | Public  | Register user  |
-| POST   | /api/auth/login  | Public  | Login user     |
-| GET    | /api/auth/me     | Private | Get current user |
+### Auth Routes
+| Method | Endpoint | Access | Description |
+|--------|----------|--------|-------------|
+| POST | /api/auth/signup | Public | Register new user |
+| POST | /api/auth/login | Public | Login and get JWT token |
+| GET | /api/auth/me | Private | Get current logged in user |
 
-### Projects
-| Method | Endpoint            | Access       | Description        |
-|--------|--------------------|--------------|--------------------|
-| GET    | /api/projects       | Private      | List projects      |
-| POST   | /api/projects       | Admin only   | Create project     |
-| GET    | /api/projects/:id   | Private      | Get one project    |
-| PUT    | /api/projects/:id   | Admin only   | Update project     |
-| DELETE | /api/projects/:id   | Admin only   | Delete project     |
+### Project Routes
+| Method | Endpoint | Access | Description |
+|--------|----------|--------|-------------|
+| GET | /api/projects | Private | Get all projects |
+| POST | /api/projects | Admin only | Create new project |
+| GET | /api/projects/:id | Private | Get single project |
+| PUT | /api/projects/:id | Admin only | Update project |
+| DELETE | /api/projects/:id | Admin only | Delete project |
 
-### Tasks
-| Method | Endpoint             | Access       | Description           |
-|--------|---------------------|--------------|-----------------------|
-| GET    | /api/tasks/dashboard | Private      | Dashboard stats       |
-| GET    | /api/tasks           | Private      | List tasks            |
-| POST   | /api/tasks           | Admin only   | Create task           |
-| PUT    | /api/tasks/:id       | Private      | Update task (limited for member) |
-| DELETE | /api/tasks/:id       | Admin only   | Delete task           |
+### Task Routes
+| Method | Endpoint | Access | Description |
+|--------|----------|--------|-------------|
+| GET | /api/tasks/dashboard | Private | Get dashboard stats |
+| GET | /api/tasks | Private | Get all tasks |
+| POST | /api/tasks | Admin only | Create new task |
+| PUT | /api/tasks/:id | Private | Update task (member can only update status) |
+| DELETE | /api/tasks/:id | Admin only | Delete task |
 
-### Users
-| Method | Endpoint   | Access     | Description       |
-|--------|-----------|------------|-------------------|
-| GET    | /api/users | Admin only | List all users    |
-
----
-
-## 🔐 Roles
-
-| Feature                  | Admin | Member |
-|--------------------------|-------|--------|
-| Create projects          | ✅    | ❌     |
-| Add members to projects  | ✅    | ❌     |
-| Create & assign tasks    | ✅    | ❌     |
-| View own projects        | ✅    | ✅     |
-| View assigned tasks      | ✅    | ✅     |
-| Update task status       | ✅    | ✅ (own tasks only) |
+### User Routes
+| Method | Endpoint | Access | Description |
+|--------|----------|--------|-------------|
+| GET | /api/users | Admin only | Get all users for assignment dropdown |
 
 ---
 
 ## ⚙️ Environment Variables
 
-### Backend (`backend/.env`)
-
-```env
+### Backend — `backend/.env`
+```
 PORT=5000
-MONGO_URI=mongodb+srv://<username>:<password>@cluster.mongodb.net/teamtaskmanager
-JWT_SECRET=your_super_secret_jwt_key_here
+MONGO_URI=mongodb+srv://<username>:<password>@cluster0.rztjbgf.mongodb.net/teamtaskmanager?retryWrites=true&w=majority
+JWT_SECRET=your_secret_key_here
 ```
 
-### Frontend (`frontend/.env`) — only needed for production
-
-```env
-VITE_API_URL=https://your-backend.railway.app/api
+### Frontend — `frontend/.env` (only needed for production)
+```
+VITE_API_URL=https://your-backend-url.onrender.com/api
 ```
 
 ---
 
-## 🛠️ Local Setup
+## 🚀 Local Setup Instructions
 
-### 1. Clone the repository
+### Requirements
+- Node.js v18 or above
+- npm
+- MongoDB Atlas account (free) or local MongoDB
 
+### Step 1 — Clone the repository
 ```bash
-git clone https://github.com/yourusername/team-task-manager.git
+git clone https://github.com/abhi7044-eng/team-task-manager.git
 cd team-task-manager
 ```
 
-### 2. Setup Backend
-
+### Step 2 — Setup Backend
 ```bash
 cd backend
 npm install
-
-# Create .env file
-cp .env.example .env
-# Fill in your MONGO_URI and JWT_SECRET
-
-npm run dev   # Starts on http://localhost:5000
 ```
 
-### 3. Setup Frontend
+Create a `.env` file inside the backend folder:
+```
+PORT=5000
+MONGO_URI=mongodb+srv://taskuser:Task1234@cluster0.rztjbgf.mongodb.net/teamtaskmanager?retryWrites=true&w=majority
+JWT_SECRET=mySuperSecretKey123
+```
 
+Start the backend:
 ```bash
-cd ../frontend
-npm install
-
-npm run dev   # Starts on http://localhost:5173
+npm run dev
 ```
 
-### 4. Open in Browser
+Backend runs on: http://localhost:5000
 
-Navigate to `http://localhost:5173`
+### Step 3 — Setup Frontend
+Open a new terminal:
+```bash
+cd frontend
+npm install
+npm run dev
+```
 
----
-
-## 🚂 Deploy on Railway
-
-### Deploy Backend
-
-1. Push your code to GitHub
-2. Go to [railway.app](https://railway.app) → New Project → Deploy from GitHub
-3. Select the `backend` folder (or root if separate)
-4. Add environment variables:
-   - `MONGO_URI` — your MongoDB Atlas connection string
-   - `JWT_SECRET` — a random secret string
-   - `PORT` — Railway sets this automatically
-5. Click Deploy
-
-### Deploy Frontend
-
-1. In Railway, create a new service in the same project
-2. Select the `frontend` folder
-3. Add environment variable:
-   - `VITE_API_URL` — your deployed backend URL + `/api`
-4. Set build command: `npm run build`
-5. Set start command: `npm run preview`
+Frontend runs on: http://localhost:5173
 
 ---
 
-## 📝 License
+## 🚂 Deployment Steps (Render.com)
 
-MIT — Free to use for learning and projects.
+### Backend Deployment
+1. Go to https://render.com and sign up with GitHub
+2. Click **New** → **Web Service**
+3. Connect your GitHub repo → select **team-task-manager**
+4. Fill in:
+   - **Root Directory:** `backend`
+   - **Build Command:** `npm install`
+   - **Start Command:** `node server.js`
+5. Add environment variables:
+   - `MONGO_URI` → your MongoDB Atlas connection string
+   - `JWT_SECRET` → your secret key
+6. Click **Create Web Service**
+7. Copy the backend URL after deployment
+
+### Frontend Deployment
+1. Click **New** → **Static Site**
+2. Connect same GitHub repo
+3. Fill in:
+   - **Root Directory:** `frontend`
+   - **Build Command:** `npm install && npm run build`
+   - **Publish Directory:** `dist`
+4. Add environment variable:
+   - `VITE_API_URL` → your backend URL + `/api`
+5. Click **Create Static Site**
+
+### MongoDB Atlas Setup
+1. Go to https://cloud.mongodb.com
+2. Create a free M0 cluster
+3. Go to **Database Access** → create a database user
+4. Go to **Network Access** → add `0.0.0.0/0` to allow all IPs
+5. Click **Connect** → **Drivers** → copy the connection string
+
+---
+
+## 🗄️ Database Schema
+
+### User
+```json
+{
+  "name": "String - required",
+  "email": "String - required, unique",
+  "password": "String - required, hashed with bcryptjs",
+  "role": "String - enum: admin, member - default: member"
+}
+```
+
+### Project
+```json
+{
+  "title": "String - required",
+  "description": "String",
+  "createdBy": "ObjectId - ref: User",
+  "members": ["ObjectId - ref: User"]
+}
+```
+
+### Task
+```json
+{
+  "title": "String - required",
+  "description": "String",
+  "projectId": "ObjectId - ref: Project - required",
+  "assignedTo": "ObjectId - ref: User - required",
+  "priority": "String - enum: Low, Medium, High - default: Medium",
+  "status": "String - enum: To Do, In Progress, Done - default: To Do",
+  "dueDate": "Date - required"
+}
+```
+
+---
+
+## 📱 Mobile Responsive
+
+The app is fully responsive and works on all screen sizes:
+- Hamburger menu on mobile — tap 3 lines to open sidebar
+- Sidebar slides in smoothly with overlay
+- Dashboard cards show 2 per row on mobile
+- Tables scroll horizontally on small screens
+
+---
+
+## 🔐 Security
+
+- Passwords are hashed using **bcryptjs** before saving to database
+- JWT tokens expire in **7 days**
+- All private routes are protected by **authMiddleware**
+- Admin-only routes have an additional **adminOnly** middleware check
+- Environment variables are used for all sensitive data — never hardcoded
+
+---
+
+## 📝 Notes
+
+- This project was built as a full-stack assignment
+- Code is beginner-friendly with comments throughout
+- No unnecessary features — kept simple and clean
+- Proper error handling and loading states on all pages
+- Toast notifications for all user actions
