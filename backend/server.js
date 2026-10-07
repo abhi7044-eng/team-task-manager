@@ -10,7 +10,17 @@ dotenv.config();
 const app = express();
 
 // ── Middleware ──────────────────────────────────────────────────────────────
-app.use(cors());
+/*app.use(cors());
+app.use(express.json());*/
+//new 
+app.use(
+  cors({
+    origin: "https://team-task-manager-1-57jt.onrender.com",
+    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+    allowedHeaders: ["Content-Type", "Authorization"],
+  })
+);
+
 app.use(express.json());
 
 // ── Routes ──────────────────────────────────────────────────────────────────
